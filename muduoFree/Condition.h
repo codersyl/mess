@@ -18,7 +18,7 @@ public:
         struct timespec abstime;
         clock_gettime(CLOCK_REALTIME, &abstime);
         abstime.tv_sec += static_cast<time_t>(seconds);
-        return ETIMEDOUT == pthread_cond_timedwait(&cond, mutex.get(), &abstime);
+        return ETIMEDOUT == pthread_cond_timedwait(&cond_, mutex_.get(), &abstime);
     }
     
 private:

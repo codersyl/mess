@@ -4,7 +4,7 @@
 
 
 #include <pthread.h>
-#include "base/noncopyable.h"
+#include "noncopyable.h"
 
 /* 使用方法
  * 写一个{}块，然后块第一行调用

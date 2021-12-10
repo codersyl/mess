@@ -1,0 +1,30 @@
+# 文件名： CMakeLists.txt
+
+# cmake 最小版本要求
+cmake_minimum_required(VERSION 3.12.4)
+# 将当前工程的名称赋值给PROJECT_NAME
+# 对于下面这句，就是${PROJECT_NAME} = test
+project(test)
+
+# 把后面三个设为 ALL 的值
+# set 还有两种其他用法，暂时不会涉及
+set(ALL 
+    a.cc
+    b.cc
+    c.cc
+)
+
+# 将指定路径目录加入头文件搜索范围
+# 下面这句：把当前路径下名为 all 的文件夹下的所有文件加入搜索路径
+include_directories(${PROJECT_SOURCE_DIR}/all)
+
+# 使用指定的源文件来生成目标可执行文件。
+# 下面这句：用 filename.cc fileB.cc 生成可执行文件 NAME
+add_executable(NAME filename.cc fileB.cc)
+
+# 添加一个子目录并构建该子目录。
+# add_subdirectory (source_dir [binary_dir] [EXCLUDE_FROM_ALL])
+add_subdirectory(someFolder)
+
+
+target_link_libraries(target ${OpenCV_LIBS})

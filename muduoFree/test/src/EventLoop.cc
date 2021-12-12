@@ -32,3 +32,8 @@ void EventLoop::loop() {
 	printf("我在循环/n"); // 先用输出点东西代表
 	looping_ = false;
 }
+
+void EventLoop::abortNotInLoopThread() {
+	printf("ERROR in :EventLoop::abortNotInLoopThread()/n");
+	assert(false);
+}

@@ -13,6 +13,32 @@
 #include <iostream>
 using namespace std;
 
+// 为了在线程中保留name,tid这些数据
+struct ThreadData {
+    typedef Thread::ThreadFunc ThreadFunc;
+    ThreadFunc func_;
+    string name_;
+    pid_t* tid_;
+    CountDownLatch* latch_;
+
+    ThreadData(const ThreadFunc& func, const string& name, pid_t* tid,
+               CountDownLatch* latch)
+        : func_(func), name_(name), tid_(tid), latch_(latch) {}
+
+    void runInThread() {
+        *tid_ = CurrentThread::tid();
+        tid_ = NULL;
+        latch_->countDown();
+        latch_ = NULL;
+
+        CurrentThread::t_threadName = name_.empty() ? "Thread" : name_.c_str();
+        prctl(PR_SET_NAME, CurrentThread::t_threadName);
+
+        func_();
+        CurrentThread::t_threadName = "finished";
+    }
+};
+
 Thread::Thread(const ThreadFunc& func, const string& n)
     : started_(false),
       joined_(false),
@@ -62,29 +88,3 @@ void Thread::setDefaultName() {
         name_ = buf;
     }
 }
-
-// 为了在线程中保留name,tid这些数据
-struct ThreadData {
-    typedef Thread::ThreadFunc ThreadFunc;
-    ThreadFunc func_;
-    string name_;
-    pid_t* tid_;
-    CountDownLatch* latch_;
-
-    ThreadData(const ThreadFunc& func, const string& name, pid_t* tid,
-               CountDownLatch* latch)
-        : func_(func), name_(name), tid_(tid), latch_(latch) {}
-
-    void runInThread() {
-        *tid_ = CurrentThread::tid();
-        tid_ = NULL;
-        latch_->countDown();
-        latch_ = NULL;
-
-        CurrentThread::t_threadName = name_.empty() ? "Thread" : name_.c_str();
-        prctl(PR_SET_NAME, CurrentThread::t_threadName);
-
-        func_();
-        CurrentThread::t_threadName = "finished";
-    }
-};

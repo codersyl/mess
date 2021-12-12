@@ -14,6 +14,7 @@
 using namespace std;
 
 // 为了在线程中保留name,tid这些数据
+// besoinde comment
 struct ThreadData {
     typedef Thread::ThreadFunc ThreadFunc;
     ThreadFunc func_;
@@ -38,6 +39,12 @@ struct ThreadData {
         CurrentThread::t_threadName = "finished";
     }
 };
+void* startThread(void* obj) {
+  ThreadData* data = static_cast<ThreadData*>(obj);
+  data->runInThread();
+  delete data;
+  return NULL;
+}
 
 Thread::Thread(const ThreadFunc& func, const string& n)
     : started_(false),

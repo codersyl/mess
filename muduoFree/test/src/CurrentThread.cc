@@ -1,6 +1,7 @@
 // need test if it's ok
 #include "CurrentThread.h"
 #include <stdio.h>
+#include <sys/types.h>
 
 pid_t gettid() {
     return static_cast<pid_t>(::syscall(SYS_gettid));

@@ -2,6 +2,8 @@
 
 # 参考菜鸟教程
 # https://www.runoob.com/linux/linux-shell.html
+# 参考w3cschool
+# https://www.w3cschool.cn/bashshell/bashshell-4cv637th.html
 # 施工中
 
 # 每个bash第一行都是：

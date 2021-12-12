@@ -2,6 +2,7 @@
 
 # 参考来源：
 # https://blog.csdn.net/whahu1989/article/details/82078563
+# https://zhuanlan.zhihu.com/p/393316878
 
 # cmake 最小版本要求
 cmake_minimum_required(VERSION 3.12.4)

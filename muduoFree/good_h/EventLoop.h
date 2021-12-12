@@ -1,4 +1,8 @@
+#ifndef	_EVENTLOOP_H_
+#define	_EVENTLOOP_H_
 
+#include "Thread.h"
+#include "CurrentThread.h"
 #include "noncopyable.h"
 
 class EventLoop : noncopyable
@@ -14,7 +18,8 @@ public:
 			abortNotInLoopThread();
 		}
 	}
-	void isInLoopThread() const { return threadId_ == CurrentThread::tid();}
+	bool isInLoopThread() const { return threadId_ == CurrentThread::tid();}
+	static EventLoop* getEventLoopOfCurrentThread();
 private:
 	void abortNotInLoopThread();
 	bool looping_;

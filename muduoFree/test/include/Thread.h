@@ -2,8 +2,8 @@
 #define _Thread_H_
 
 #include <pthread.h>
-#include <functional>
-#include <memory>
+#include <functional>   // std::function
+#include <memory>       // 智能指针
 #include "noncopyable.h"
 #include "CountDownLatch.h"
 #include <sys/syscall.h>

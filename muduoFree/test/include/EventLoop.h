@@ -19,6 +19,7 @@ public:
 		}
 	}
 	bool isInLoopThread() const { return threadId_ == CurrentThread::tid();}
+	static EventLoop* getEventLoopOfCurrentThread();
 private:
 	void abortNotInLoopThread();
 	bool looping_;

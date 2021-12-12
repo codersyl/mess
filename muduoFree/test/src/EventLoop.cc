@@ -1,5 +1,6 @@
 #include "EventLoop.h"
 #include <assert.h>
+#include <stdio.h> // printf()
 
 __thread EventLoop* t_loopInThisThread = 0;
 

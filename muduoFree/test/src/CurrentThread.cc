@@ -2,7 +2,8 @@
 #include "CurrentThread.h"
 #include <stdio.h>
 #include <sys/types.h>
-#include <linux/unistd.h>	// gettid
+#include <unistd.h>	// gettid
+#include <sys/syscall.h>
 
 pid_t gettid() {
     return static_cast<pid_t>(::syscall(SYS_gettid));

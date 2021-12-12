@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <memory>
-
+#include <pthread>
 #include <iostream>
 using namespace std;
 

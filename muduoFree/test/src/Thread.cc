@@ -81,13 +81,6 @@ int Thread::join() {
     return pthread_join(pthreadId_, NULL);
 }
 
-void* startThread(void* obj) {
-    ThreadData* data = static_cast<ThreadData*>(obj);
-    data->runInThread();
-    delete data;
-    return NULL;
-}
-
 void Thread::setDefaultName() {
     if (name_.empty()) {
         char buf[32];

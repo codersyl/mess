@@ -48,10 +48,6 @@ int Thread::join() {
     return pthread_join(pthreadId_, NULL);
 }
 
-pid_t gettid() {
-    return static_cast<pid_t>(::syscall(SYS_gettid));
-}
-
 void* startThread(void* obj) {
     ThreadData* data = static_cast<ThreadData*>(obj);
     data->runInThread();

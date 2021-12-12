@@ -1,5 +1,10 @@
 // need test if it's ok
 #include "CurrentThread.h"
+#include <stdio.h>
+
+pid_t gettid() {
+    return static_cast<pid_t>(::syscall(SYS_gettid));
+}
 
 namespace CurrentThread {
 __thread int t_cachedTid = 0;

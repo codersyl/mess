@@ -34,6 +34,6 @@ void EventLoop::loop() {
 }
 
 void EventLoop::abortNotInLoopThread() {
-	printf("ERROR in :EventLoop::abortNotInLoopThread()/n");
+	printf("ERROR in :EventLoop::abortNotInLoopThread()\n");
 	assert(false);
 }

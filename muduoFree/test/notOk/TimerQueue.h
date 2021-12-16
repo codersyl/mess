@@ -7,6 +7,8 @@
 struct TimerCmp {
 	bool operator()(std::shared_ptr<Timer> &a,
 	                std::shared_ptr<Timer> &b) const {
+		if(a->getExpTime() == b->getExpTime())
+			return a->getId() > b->getId();
 		return a->getExpTime() > b->getExpTime();
 	}
 };

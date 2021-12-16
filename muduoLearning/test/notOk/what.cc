@@ -1,16 +1,12 @@
 #include "Timestamp.h"
 #include <iostream>
+#include <unistd.h>
 using namespace std;
 int main() {
 	Timestamp a = Timestamp::now();
+	sleep(5);
 	Timestamp b = Timestamp::now();
 	cout<<a.toString()<<endl;
 	cout<<b.toString()<<endl;
-	if(a < b)
-		cout<<"b 大"<<endl;
-	else if(b > a)
-		cout<<"a 大"<<endl;
-	else
-		cout<<"一样大"<<endl;
 	return 0;
 }

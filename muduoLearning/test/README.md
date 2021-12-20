@@ -14,3 +14,21 @@ mainloop不使用Channel，而是使用Acceptor来监听端口，然后把新的
 一个对象管理一个连接的具体事务，里面的函数提供的功能应该主要是数据的传输与收取
 
 解析HTTP报文的东西
+---
+分析一下过程
+
+一个主线程，开
+EventLoop + Acceptor
+
+其余线程开
+EventLoop + Channel + 
+---
+# 类的功能
+## TimerQueue
+高效的组织没到期的Timer，具体体现在
+* 快速根据当前时间找到已经过期的Timer
+* 高效添加和删除Timer
+
+可选用线性表、二叉树或者堆
+
+urgent

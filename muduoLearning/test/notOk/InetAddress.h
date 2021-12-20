@@ -1,7 +1,6 @@
 #ifndef _INETADDRESS_H_
 #define _INETADDRESS_H_
 
-#include "muduo/base/StringPiece.h"
 #include <string.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>　// uint16_t htons(uint16_t hostshort);
@@ -22,4 +21,4 @@ private:
     struct sockaddr_in addr_; 
     static sockaddr_in_len = sizeof(sockaddr_in);
 };
-#endif  // MUDUO_NET_INETADDRESS_H
+#endif  // _INETADDRESS_H_

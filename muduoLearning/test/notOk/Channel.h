@@ -40,5 +40,5 @@ private:
 	Callback ErrorCallback_;
 };
 
-
+typedef std::shared_ptr<Channel> SP_Channel;
 #endif	// _CHANNEL_H_

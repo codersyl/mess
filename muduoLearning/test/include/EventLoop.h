@@ -45,7 +45,7 @@ private:
 	// 分两向，book
 	typedef std::vector<Channel*> ChannelList;
 	bool quit_;
-	std::unique_ptr<Poller> poller_;
+	std::unique_ptr<EPoller> poller_;
 	ChannelList activeChannels_;
 	// EventLoop::loop()有了工作内容：
 	// 调用Epoller::poll()获得当前活动事件的Channel列表，然后调用每个Channel的handleEvent函数

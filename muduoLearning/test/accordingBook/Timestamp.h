@@ -25,6 +25,7 @@ private:
 
 public:
 	explicit Timestamp(int64_t tt) : MiuSSinceEpoch_(tt) {}
+	Timestamp(Timestamp &ts) : MiuSSinceEpoch_(ts.MiuSSinceEpoch_) {}
 	~Timestamp() {}
 	static Timestamp now() {
 		struct timeval tv;

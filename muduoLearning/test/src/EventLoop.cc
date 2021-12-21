@@ -32,7 +32,7 @@ void EventLoop::loop() {
 	quit_ = false;
 	while(!quit_) {
 		activeChannels_.clear();
-		poller_->poll(kPollTimeMs, &activeChannels_);
+		poller_->poll(0/* kPollTimeMs */, &activeChannels_);
 		for(ChannelList::iterator it = activeChannels_.begin(); it != activeChannels_.end(); it++) {
 			(*it)->handleEvent();
 		}

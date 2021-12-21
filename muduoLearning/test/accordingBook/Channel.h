@@ -3,9 +3,10 @@
 #define _CHANNEL_H_
 
 #include "noncopyable.h"
+#include "EventLoop.h"
 #include <sys/epoll.h>
 
-class EventLoop;	// 前向声明
+
 
 // Channel 负责注册和响应 IO事件
 // 不拥有fd

@@ -34,6 +34,9 @@ public:
 	void setIndex(int idx) { index_ = idx; }
 
 	EventLoop* getOwnerEventLoop() { return loop_; }
+
+	// 
+	enableReading() {events_ = EPOLLIN | EPOLLPRI; update(); }
 private:
 	void update();
 	EventLoop* loop_;

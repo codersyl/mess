@@ -8,7 +8,7 @@
 #include <assert.h>
 
 class Channel;
-class Poller;
+class EPoller;
 
 class EventLoop : noncopyable
 {

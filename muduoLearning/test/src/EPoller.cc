@@ -1,5 +1,7 @@
 // mine
 #include "EPoller.h"
+#include "Channel.h"
+#include "EventLoop.h"
 #include <assert.h>
 
 
@@ -11,6 +13,7 @@ EPoller::EPoller(EventLoop* loop) :
 }
 EPoller::~EPoller() {}
 
+void EPoller::assertInLoopThread() { ownerLoop_->assertInLoopThread(); }
 
 Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 	int numEvents = epoll_wait(epollFd_,

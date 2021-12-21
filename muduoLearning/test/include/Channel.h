@@ -1,9 +1,8 @@
-// mine
+//mine
 #ifndef _CHANNEL_H_
 #define _CHANNEL_H_
 
 #include "noncopyable.h"
-#include "EventLoop.h"
 #include <sys/epoll.h>
 
 class EventLoop;
@@ -34,7 +33,7 @@ public:
 	int getIndex() { return index_; }
 	void setIndex(int idx) { index_ = idx; }
 
-	EventLoop* getOwnerEventLoop() { return loop_; }
+	EventLoop* getOwnerEventLoop();
 
 	//
 	void enableReading() { events_ = EPOLLIN | EPOLLPRI; update(); }

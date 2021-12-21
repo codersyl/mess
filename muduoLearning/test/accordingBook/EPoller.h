@@ -4,17 +4,16 @@
 
 #include <sys/epoll.h>
 #include <memory>
-#include "Channel.h"
 #include <map>
-// linyas
-#include <vector>
-// #include "Timer.h"
-#include "Timestamp.h"
+#include "Timestamp.h"	// 这个可以加，不会循环编译
 #include "noncopyable.h"
+#include <vector>
 
 // EPoller 是 EventLoop 的间接成员，只能其owner EventLoop在 IO 线程调用
 // 声明周期与 EventLoop相等
 
+class Channel;
+class EventLoop;
 
 class EPoller : noncopyable
 {
@@ -28,7 +27,7 @@ public:
 	Timestamp poll(int timeousMs, ChannelList* activeChannels);
 	void updateChannel(Channel* channel);
 
-	void assertInLoopThread() { ownerLoop_->assertInLoopThread(); }
+	void assertInLoopThread();
 
 private:
 	void fillActiveChannels(int numEvents, ChannelList* activeChannels) const;

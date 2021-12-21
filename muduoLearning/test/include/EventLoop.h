@@ -4,12 +4,12 @@
 #include "Thread.h"
 #include "CurrentThread.h"
 #include "noncopyable.h"
-#include "Channel.h"
-#include "EPoller.h"
 #include <memory>
 #include <assert.h>
 #include <vector>
 
+class Channel;
+class EPoller;
 
 class EventLoop : noncopyable
 {
@@ -32,11 +32,7 @@ public:
 		quit_ = true;
 	}
 
-	void updateChannel(Channel* channel) {
-		assert(channel->getOwnerEventLoop() == this);
-		assertInLoopThread();
-		poller_->updateChannel(channel);
-	}
+	void updateChannel(Channel* channel);
 	// endBook
 private:
 	void abortNotInLoopThread();

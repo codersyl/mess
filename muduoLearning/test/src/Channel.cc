@@ -1,7 +1,6 @@
 // mine
 #include "Channel.h" 
 #include "EventLoop.h"
-
 #include <sys/epoll.h>
 
 Channel::Channel(EventLoop* loop, int fd) :
@@ -37,3 +36,7 @@ void Channel::handleEvent() {
         if(WriteCallback_) WriteCallback_();
     }
 }
+
+EventLoop* Channel::getOwnerEventLoop() { return loop_; }
+
+// void Channel::enableReading() { events_ = EPOLLIN | EPOLLPRI; update(); }

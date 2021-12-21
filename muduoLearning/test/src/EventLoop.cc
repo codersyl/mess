@@ -1,6 +1,8 @@
 #include "EventLoop.h"
 #include <stdio.h> // printf()
 #include <iostream>
+#include "Channel.h"
+#include "EPoller.h"
 
 __thread EventLoop* t_loopInThisThread = 0;
 
@@ -30,13 +32,13 @@ void EventLoop::loop() {
 	looping_ = true;
 	// beginBook
 	quit_ = false;
-	while(!quit_) {
+	while (!quit_) {
 		activeChannels_.clear();
 		poller_->poll(0/* kPollTimeMs */, &activeChannels_);
-		for(ChannelList::iterator it = activeChannels_.begin(); it != activeChannels_.end(); it++) {
+		for (ChannelList::iterator it = activeChannels_.begin(); it != activeChannels_.end(); it++) {
 			(*it)->handleEvent();
 		}
-		std::cout<<"EventLoop threadId_ = "<<threadId_<<" stop looping\n";
+		std::cout << "EventLoop threadId_ = " << threadId_ << " stop looping\n";
 	}
 	// endBook
 }
@@ -44,4 +46,10 @@ void EventLoop::loop() {
 void EventLoop::abortNotInLoopThread() {
 	printf("ERROR in :EventLoop::abortNotInLoopThread()\n");
 	assert(false);
+}
+
+void EventLoop::updateChannel(Channel* channel) {
+	assert(channel->getOwnerEventLoop() == this);
+	assertInLoopThread();
+	poller_->updateChannel(channel);
 }

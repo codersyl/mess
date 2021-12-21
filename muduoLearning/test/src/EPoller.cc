@@ -73,7 +73,7 @@ void EPoller::updateChannel(Channel* channel) {
 		assert(channels_.find(fd) != channels_.end());
 		assert(channels_[fd] == channel);
 		assert(index == 1);
-		if (channel->getEvents_ == 0)	// 没事件，删掉
+		if (channel->getEvents() == 0)	// 没事件，删掉
 		{
 			struct epoll_event event;
 			bzero(&event, sizeof(event));
@@ -81,7 +81,7 @@ void EPoller::updateChannel(Channel* channel) {
 			event.data.ptr = channel;
 			int fd = channel->getfd();
 			::epoll_ctl(epollFd_, EPOLL_CTL_DEL, fd, &event);
-			channel->set_index(2);
+			channel->setIndex(2);
 		}
 		else // 有事件，改一改
 		{

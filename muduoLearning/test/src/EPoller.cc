@@ -4,6 +4,9 @@
 #include "EventLoop.h"
 #include <assert.h>
 
+// cout
+#include <iostream>
+
 
 EPoller::EPoller(EventLoop* loop) :
 	epollFd_(epoll_create1(EPOLL_CLOEXEC)),
@@ -23,9 +26,9 @@ Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 	Timestamp now(0);
 	now.becomeNow();
 	if (numEvents > 0) {
-		std::cout << numEvents << " events happended\n" << endl;
+		std::cout << numEvents << " events happended\n";
 		fillActiveChannels(numEvents, activeChannels);
-		if(implicit_cast<size_t>(numEvents) == events_.size()) {
+		if(numEvents == events_.size()) {
 			events_.resize(events_.size() * 2);
 		}
 	} else if (numEvents == 0) {
@@ -39,11 +42,11 @@ Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 
 void EPoller::fillActiveChannels(int numEvents,
                                 ChannelList* activeChannels) const {
-	assert(implicit_cast<size_t>(numEvents) <= events_.size());
+	assert(numEvents <= events_.size());
 	for (int i = 0; i < numEvents; ++i)
 	{
-		Channel* channel = static_cast<Channel*>(events_[i].data.ptr);
-		channel->set_revents(events_[i].events);
+		Channel* channel = (Channel*) (events_[i].data.ptr);
+		channel->setRevents(events_[i].events);
 		activeChannels->push_back(channel);
 	}
 }

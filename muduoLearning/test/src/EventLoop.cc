@@ -9,6 +9,7 @@ __thread EventLoop* t_loopInThisThread = 0;
 EventLoop::EventLoop()
 	: looping_(false),
 	  threadId_(CurrentThread::tid()) {
+	 activeChannels_.resize(16);
 	if (t_loopInThisThread) {
 		// some log theWorld
 	} else {
@@ -34,13 +35,14 @@ void EventLoop::loop() {
 	quit_ = false;
 	while (!quit_) {
 		activeChannels_.clear();
-		poller_->poll(0/* kPollTimeMs */, &activeChannels_);
+		poller_->poll(10000/* kPollTimeMs */, &activeChannels_);
 		for (ChannelList::iterator it = activeChannels_.begin(); it != activeChannels_.end(); it++) {
 			(*it)->handleEvent();
 		}
 		std::cout << "EventLoop threadId_ = " << threadId_ << " stop looping\n";
 	}
 	// endBook
+	looping_ = false;
 }
 
 void EventLoop::abortNotInLoopThread() {

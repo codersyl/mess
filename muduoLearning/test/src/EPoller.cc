@@ -12,7 +12,7 @@ EPoller::EPoller(EventLoop* loop) :
 	epollFd_(epoll_create1(EPOLL_CLOEXEC)),
 	ownerLoop_(loop) {
 	assert(epollFd_ > 0);
-	events_.resize(16);	// 初始长度设为16
+	events_.resize(kInitEventListSize);	// 初始长度设为16
 }
 EPoller::~EPoller() {}
 

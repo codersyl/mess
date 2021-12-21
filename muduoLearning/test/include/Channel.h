@@ -38,7 +38,7 @@ public:
 	EventLoop* getOwnerEventLoop();
 
 	//
-	void enableReading() { events_ = EPOLLIN | EPOLLPRI; update(); }
+	void enableReading() { events_ |= EPOLLIN | EPOLLPRI; update(); }
 private:
 	void update();
 	EventLoop* loop_;

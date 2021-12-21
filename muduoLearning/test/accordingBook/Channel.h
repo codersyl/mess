@@ -6,7 +6,7 @@
 #include "EventLoop.h"
 #include <sys/epoll.h>
 
-
+class EventLoop;
 
 // Channel 负责注册和响应 IO事件
 // 不拥有fd
@@ -28,7 +28,7 @@ public:
 	int getfd() const { return fd_;}
 	int getEvents() const { return events_;}
 	void setRevents(int revt) { revents_ = revt; }
-	void setEvents(int evt) { events_ = }
+	void setEvents(int evt) { events_ = evt; }
 
 	// for Poller
 	int getIndex() { return index_; }
@@ -36,8 +36,8 @@ public:
 
 	EventLoop* getOwnerEventLoop() { return loop_; }
 
-	// 
-	enableReading() {events_ = EPOLLIN | EPOLLPRI; update(); }
+	//
+	void enableReading() { events_ = EPOLLIN | EPOLLPRI; update(); }
 private:
 	void update();
 	EventLoop* loop_;

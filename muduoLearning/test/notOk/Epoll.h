@@ -1,3 +1,4 @@
+// mine
 #ifndef _EPOLL_H_
 #define _EPOLL_H_
 
@@ -31,8 +32,8 @@ private:
 	static const int MAXFDS = 100000;
 	int epollFd_;
 	std::vector<epoll_event> events_;
-	std::shared_ptr<Channel> fd2chan_[MAXFDS];
+	SP_Channel fd2chan_[MAXFDS];
 	std::shared_ptr<HttpData> fd2http_[MAXFDS];
-	TimerManager timerManager_;
+	TimerQueue TQ_;
 };
 #endif

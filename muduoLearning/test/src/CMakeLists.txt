@@ -2,7 +2,9 @@ aux_source_directory (. SRC_LIST)
 
 include_directories (../include)
 
+
 # 测试用的文件夹
+include_directories (../accordingBook)
 aux_source_directory (../accordingBook BOOK_DIRECTION)
 
 # 设置包含main的文件

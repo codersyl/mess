@@ -28,8 +28,9 @@ public:
 	void updateChannel(Channel* channel);
 
 	void assertInLoopThread();
-
 private:
+	static const int kInitEventListSize = 4000;
+
 	void fillActiveChannels(int numEvents, ChannelList* activeChannels) const;
 
 	typedef std::vector<struct epoll_event> EventList;

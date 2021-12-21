@@ -45,7 +45,8 @@ private:
 	int fd_;		// 构造时初始化
 	int events_;	// 构造时初始化,关心的事件，由用户设置
 	int revents_;	// 目前活动的事件，由 EventLoop / Poller 设置
-	int index_;	// used by Poller
+
+	int index_;	// used by Poller，初始化为-1，记录在案时为1，被删了为-2
 
 	Callback ReadCallback_;
 	Callback WriteCallback_;

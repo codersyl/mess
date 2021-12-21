@@ -1,6 +1,6 @@
 #include "EventLoop.h"
-#include <assert.h>
 #include <stdio.h> // printf()
+#include <iostream>
 
 __thread EventLoop* t_loopInThisThread = 0;
 
@@ -28,9 +28,17 @@ void EventLoop::loop() {
 	assert(!looping_);
 	assertInLoopThread();
 	looping_ = true;
-	// 循环要做的事 theWorld
-	printf("我在循环\n"); // 先用输出点东西代表
-	looping_ = false;
+	// beginBook
+	quit_ = false;
+	while(!quit_) {
+		activeChannels_.clear();
+		poller_->poll(kPollTimeMs, &activeChannels_);
+		for(ChannelList::iterator it = activeChannels_.begin(); it != activeChannels_.end(); it++) {
+			(*it)->handleEvent();
+		}
+		std::cout<<"EventLoop threadId_ = "<<threadId_<<" stop looping\n";
+	}
+	// endBook
 }
 
 void EventLoop::abortNotInLoopThread() {

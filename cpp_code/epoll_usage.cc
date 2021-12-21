@@ -46,6 +46,7 @@ struct epoll_event {
     epoll_data_t data; // User data variable
 };
 
+
 // Epoll Events可以是下面几个宏的集合：
 // * EPOLLIN：表示对应的文件描述符可读（包括对端Socket）；
 // * EPOLLOUT：表示对应的文件描述符可写；
@@ -56,6 +57,13 @@ struct epoll_event {
 // * EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket，需要再次
 
 
+// 注册epoll时 epoll_event 的使用方法：
+struct epoll_event event;
+event.events = EPOLLIN|EPOLLET;
+event.data.fd = someFd;
+if(epoll_ctl(epfd, EPOLL_CTL_ADD, someFd, &event) < 0) {
+	perror("epoll add error");
+}
 
 // epoll_wait
 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);

@@ -1,6 +1,10 @@
 // p289 s01/test3.cc
 #include <sys/timerfd.h>
 #include <stdio.h>	// printf
+#include "EventLoop.h"
+#include "Channel.h"
+#include <string.h> // bzero
+#include <fstream> // close() ?
 
 EventLoop* g_loop;
 
@@ -18,7 +22,7 @@ int main() {
 	channel.enableReading();
 
 	struct itimerspec howlong;
-	memset(&howlong, 0, sizeof(howlong));
+	bzero(&howlong, sizeof(howlong));
 	howlong.it_value.tv_sec = 5;
 	::timerfd_settime(timerfd, 0, &howlong, NULL);
 

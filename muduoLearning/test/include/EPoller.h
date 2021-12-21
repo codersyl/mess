@@ -8,13 +8,15 @@
 #include <map>
 // linyas
 #include <vector>
-#include "Timer.h"
+// #include "Timer.h"
 #include "Timestamp.h"
 #include "noncopyable.h"
 
 // EPoller 是 EventLoop 的间接成员，只能其owner EventLoop在 IO 线程调用
 // 声明周期与 EventLoop相等
 
+class Channel;
+class EventLoop;
 
 class EPoller : noncopyable
 {

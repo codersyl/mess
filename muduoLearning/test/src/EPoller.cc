@@ -40,12 +40,12 @@ Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 }
 
 void updateChannel(Channel* channel) {
-	EPoller::assertInLoopThread();
-	const int index = channel->index();
+	this->assertInLoopThread();
+	const int index = channel->getIndex();
 	if (index == -1 || index == 2)	// 初始化为 -1，删除为 2
 	{
 		// a new one, add with EPOLL_CTL_ADD
-		int fd = channel->fd();
+		int fd = channel->getfd();
 		if (index == -1)
 		{
 			assert(channels_.find(fd) == channels_.end());
@@ -57,40 +57,40 @@ void updateChannel(Channel* channel) {
 			assert(channels_[fd] == channel);
 		}
 
-		channel->set_index(1);
+		channel->setIndex(1);
 		// 监听channel
 		struct epoll_event event;
-		bzero(event, sizeof(event));
-		event.events = channel->events();
+		bzero(&event, sizeof(event));
+		event.events = channel->getEvents();
 		event.data.ptr = channel;
-		::epoll_ctl(epollfd_, EPOLL_CTL_ADD, fd, &event);
+		::epoll_ctl(epollFd_, EPOLL_CTL_ADD, fd, &event);
 	}
 	else
 	{
 		// update existing one with EPOLL_CTL_MOD/DEL
-		int fd = channel->fd();
+		int fd = channel->getfd();
 		(void)fd;
 		assert(channels_.find(fd) != channels_.end());
 		assert(channels_[fd] == channel);
 		assert(index == 1);
-		if (channel.events_ == 0)	// 没事件，删掉
+		if (channel->getEvents_ == 0)	// 没事件，删掉
 		{
 			struct epoll_event event;
-			bzero(event, sizeof(event));
-			event.events = channel->events();
+			bzero(&event, sizeof(event));
+			event.events = channel->getEvents();
 			event.data.ptr = channel;
-			int fd = channel->fd();
-			::epoll_ctl(epollfd_, EPOLL_CTL_DEL, fd, &event)
+			int fd = channel->getfd();
+			::epoll_ctl(epollFd_, EPOLL_CTL_DEL, fd, &event);
 			channel->set_index(2);
 		}
 		else // 有事件，改一改
 		{
 			struct epoll_event event;
-			bzero(event, sizeof(event));
-			event.events = channel->events();
+			bzero(&event, sizeof(event));
+			event.events = channel->getEvents();
 			event.data.ptr = channel;
-			int fd = channel->fd();
-			::epoll_ctl(epollfd_, EPOLL_CTL_MOD, fd, &event)
+			int fd = channel->getfd();
+			::epoll_ctl(epollFd_, EPOLL_CTL_MOD, fd, &event);
 		}
 	}
 }

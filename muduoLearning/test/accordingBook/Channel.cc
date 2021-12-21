@@ -4,7 +4,7 @@ include "EventLoop.h"
 
 #include <sys/epoll.h>
 
-Channel::Channel(EventLoop *loop, int fd) :
+Channel::Channel(EventLoop* loop, int fd) :
     loop_(loop),
     fd_(fd),
     events_(0),

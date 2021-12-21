@@ -51,7 +51,9 @@ void EventLoop::abortNotInLoopThread() {
 }
 
 void EventLoop::updateChannel(Channel* channel) {
+	printf("--- start update in EventLoop\n");
 	assert(channel->getOwnerEventLoop() == this);
 	assertInLoopThread();
 	poller_->updateChannel(channel);
+	printf("--- start update in EventLoop\n");
 }

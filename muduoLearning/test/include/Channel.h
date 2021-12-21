@@ -6,6 +6,7 @@
 #include <sys/epoll.h>
 #include <functional>
 #include <memory>
+#include <stdio.h>	// printf
 
 class EventLoop;
 
@@ -38,7 +39,13 @@ public:
 	EventLoop* getOwnerEventLoop();
 
 	//
-	void enableReading() { events_ |= EPOLLIN | EPOLLPRI; update(); }
+	void enableReading() { 
+		printf("- start enableReading()\n");
+		events_ |= EPOLLIN | EPOLLPRI;
+		printf("events_ set\n");
+		update();
+		printf("- end   enableReading()\n");
+	}
 private:
 	void update();
 	EventLoop* loop_;

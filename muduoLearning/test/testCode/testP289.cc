@@ -13,6 +13,17 @@ void timeout() {
 	g_loop->quit();
 }
 
+// start!
+// EventLoop in main() constructed!
+// g_loop = &loop;!
+// timerfd got!
+// channel constructed!
+// ReadCallback set!
+// 段错误
+
+// 加更多的printf以查看问题出在哪
+// 
+
 int main() {
 	printf("start!\n");
 	EventLoop loop;
@@ -26,6 +37,7 @@ int main() {
 	channel.setReadCallback(timeout);
 	printf("ReadCallback set!\n");
 	channel.enableReading();
+	// 上面一行出问题
 	printf("enableReading()!\n");
 	struct itimerspec howlong;
 	printf("howlong constructed!\n");

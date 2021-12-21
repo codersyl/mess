@@ -9,6 +9,7 @@
 #include "noncopyable.h"
 #include "EventLoop.h"
 #include <vector>
+#include <stdio.h>	// printf
 
 // EPoller 是 EventLoop 的间接成员，只能其owner EventLoop在 IO 线程调用
 // 声明周期与 EventLoop相等

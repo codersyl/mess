@@ -40,6 +40,7 @@ Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 }
 
 void EPoller::updateChannel(Channel* channel) {
+	printf("---- start update in EPoller\n");
 	this->assertInLoopThread();
 	const int index = channel->getIndex();
 	if (index == -1 || index == 2)	// 初始化为 -1，删除为 2
@@ -93,6 +94,7 @@ void EPoller::updateChannel(Channel* channel) {
 			::epoll_ctl(epollFd_, EPOLL_CTL_MOD, fd, &event);
 		}
 	}
+	printf("---- end   update in EPoller\n");
 }
 
 

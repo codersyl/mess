@@ -7,6 +7,7 @@
 #include <memory>
 #include <assert.h>
 #include <vector>
+#include <stdio.h>	// printf
 
 class Channel;
 class EPoller;

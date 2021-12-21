@@ -15,7 +15,9 @@ Channel::~Channel() {
 }
 
 void Channel::update() {
+    printf("-- start update\n");
     loop_->updateChannel(this);
+    printf("-- end   update\n");
 }
 
 void Channel::handleEvent() {

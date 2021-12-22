@@ -10,6 +10,7 @@ EventLoop::EventLoop()
 	: looping_(false),
 	  threadId_(CurrentThread::tid()) {
 	activeChannels_.resize(16);
+	poller_.reset(new EPoller(this));
 	if (t_loopInThisThread) {
 		// some log theWorld
 	} else {
@@ -21,6 +22,7 @@ EventLoop::EventLoop()
 EventLoop::~EventLoop() {
 	assert(!looping_);
 	t_loopInThisThread = NULL;
+	poller_.reset();
 }
 
 EventLoop* EventLoop::getEventLoopOfCurrentThread() {

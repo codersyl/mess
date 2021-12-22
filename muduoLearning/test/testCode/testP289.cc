@@ -5,6 +5,7 @@
 #include "Channel.h"
 #include <string.h> // bzero
 #include <fstream> // close() ?
+#include <iostream>
 
 EventLoop* g_loop;
 
@@ -30,9 +31,11 @@ int main() {
 	printf("EventLoop in main() constructed!\n");
 	g_loop = &loop;
 	printf("g_loop = &loop;!\n");
+	std::cout<<g_loop<<"\n";
 	int timerfd = ::timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
 	printf("timerfd got!\n");
 	Channel channel(&loop, timerfd);
+	std::cout<<channel.getOwnerEventLoop()<<"\n";
 	printf("channel constructed!\n");
 	channel.setReadCallback(timeout);
 	printf("ReadCallback set!\n");

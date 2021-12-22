@@ -119,7 +119,3 @@ void EPoller::fillActiveChannels(int numEvents,
 		activeChannels->push_back(channel);
 	}
 }
-
-void EPoller::assertInLoopThread() {
-	ownerLoop_->assertInLoopThread();
-}

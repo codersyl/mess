@@ -42,7 +42,9 @@ Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 void EPoller::updateChannel(Channel* channel) {
 	printf("---- start update in EPoller\n");
 	this->assertInLoopThread();
+	printf("---- assertInLoopThread done!\n");
 	const int index = channel->getIndex();
+	printf("---- index gotten!\n");
 	if (index == -1 || index == 2)	// 初始化为 -1，删除为 2
 	{
 		// a new one, add with EPOLL_CTL_ADD

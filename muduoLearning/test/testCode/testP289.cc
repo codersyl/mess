@@ -1,4 +1,5 @@
 // p289 s01/test3.cc
+// 2021-12-22 pass
 #include <sys/timerfd.h>
 #include <stdio.h>	// printf
 #include "EventLoop.h"
@@ -13,17 +14,6 @@ void timeout() {
 	printf("timeout!\n");
 	g_loop->quit();
 }
-
-// start!
-// EventLoop in main() constructed!
-// g_loop = &loop;!
-// timerfd got!
-// channel constructed!
-// ReadCallback set!
-// 段错误
-
-// 加更多的printf以查看问题出在哪
-// 
 
 int main() {
 	printf("start!\n");

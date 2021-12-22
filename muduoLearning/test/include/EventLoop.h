@@ -21,33 +21,25 @@ public:
 	void loop();
 
 	void assertInLoopThread();
-
-	bool isInLoopThread() const { 
-		printf("------ start isInLoopThread() without end\n");
-		return threadId_ == CurrentThread::tid();
-	}
+	// 判断是否在当前对应的线程
+	bool isInLoopThread() const { return threadId_ == CurrentThread::tid(); }
 	
 	static EventLoop* getEventLoopOfCurrentThread();
 
-	// beginBook
-	void quit() {
-		quit_ = true;
-	}
+	void quit() { quit_ = true; }
 
 	void updateChannel(Channel* channel);
-	// endBook
 private:
 	void abortNotInLoopThread();
 	bool looping_;
+	bool quit_;
 	const pid_t threadId_;
 
-	// 分两向，book
 	typedef std::vector<Channel*> ChannelList;
-	bool quit_;
 	std::unique_ptr<EPoller> poller_;
 	ChannelList activeChannels_;
 	// EventLoop::loop()有了工作内容：
-	// 调用Epoller::poll()获得当前活动事件的Channel列表，然后调用每个Channel的handleEvent函数
+	// 调用EPoller::poll()获得当前活动事件的Channel列表，然后调用每个Channel的handleEvent函数
 };
 
 #endif

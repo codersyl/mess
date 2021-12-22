@@ -23,7 +23,12 @@ EventLoop + Acceptor
 其余线程开
 EventLoop + Channel + 
 ---
+# 已经测过了的类的说明
+## EventLoop
+每个线程一个EventLoop，loop()是线程的主要内容，每次loop都会调去当前的活动事件，然后依次执行每个事件
+---
 # 类的功能
+
 ## TimerQueue
 高效的组织没到期的Timer，具体体现在
 * 快速根据当前时间找到已经过期的Timer

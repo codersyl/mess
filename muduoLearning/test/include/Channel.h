@@ -40,11 +40,8 @@ public:
 
 	//
 	void enableReading() { 
-		printf("- start enableReading()\n");
 		events_ |= EPOLLIN | EPOLLPRI;
-		printf("events_ set\n");
 		update();
-		printf("- end   enableReading()\n");
 	}
 private:
 	void update();

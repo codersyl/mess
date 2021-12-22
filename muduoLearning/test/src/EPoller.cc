@@ -41,7 +41,7 @@ Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 
 void EPoller::updateChannel(Channel* channel) {
 	printf("---- start update in EPoller\n");
-	this->assertInLoopThread();
+	assertInLoopThread();
 	printf("---- assertInLoopThread done!\n");
 	const int index = channel->getIndex();
 	printf("---- index gotten!\n");
@@ -118,4 +118,8 @@ void EPoller::fillActiveChannels(int numEvents,
 		channel->setRevents(events_[i].events);
 		activeChannels->push_back(channel);
 	}
+}
+
+void assertInLoopThread() {
+	ownerLoop_->->assertInLoopThread();
 }

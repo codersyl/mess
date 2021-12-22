@@ -121,5 +121,5 @@ void EPoller::fillActiveChannels(int numEvents,
 }
 
 void assertInLoopThread() {
-	ownerLoop_->->assertInLoopThread();
+	ownerLoop_->assertInLoopThread();
 }

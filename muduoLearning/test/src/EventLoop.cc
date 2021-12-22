@@ -9,7 +9,7 @@ __thread EventLoop* t_loopInThisThread = 0;
 EventLoop::EventLoop()
 	: looping_(false),
 	  threadId_(CurrentThread::tid()) {
-	 activeChannels_.resize(16);
+	activeChannels_.resize(16);
 	if (t_loopInThisThread) {
 		// some log theWorld
 	} else {
@@ -56,4 +56,14 @@ void EventLoop::updateChannel(Channel* channel) {
 	assertInLoopThread();
 	poller_->updateChannel(channel);
 	printf("--- start update in EventLoop\n");
+}
+
+void EventLoop::assertInLoopThread() {
+	printf("----- start assertInLoopThread\n");
+	if (!isInLoopThread()) {
+		printf("----- here\n");
+		abortNotInLoopThread();
+		printf("----- pass here\n");
+	}
+	printf("----- end   assertInLoopThread\n");
 }

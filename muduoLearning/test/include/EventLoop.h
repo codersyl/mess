@@ -20,20 +20,13 @@ public:
 	
 	void loop();
 
-	void assertInLoopThread() {
-		printf("----- start assertInLoopThread\n");
-		if(!isInLoopThread()) {
-			printf("----- here\n");
-			abortNotInLoopThread();
-			printf("----- pass here\n");
-		}
-		printf("----- end   assertInLoopThread\n");
-	}
+	void assertInLoopThread();
 
 	bool isInLoopThread() const { 
 		printf("------ start isInLoopThread() without end\n");
 		return threadId_ == CurrentThread::tid();
 	}
+	
 	static EventLoop* getEventLoopOfCurrentThread();
 
 	// beginBook

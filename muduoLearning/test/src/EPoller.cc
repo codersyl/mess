@@ -16,7 +16,11 @@ EPoller::EPoller(EventLoop* loop) :
 }
 EPoller::~EPoller() {}
 
-void EPoller::assertInLoopThread() { ownerLoop_->assertInLoopThread(); }
+void EPoller::assertInLoopThread() { 
+	printf("# start assert In EPoller\n");
+	ownerLoop_->assertInLoopThread(); 
+	printf("# end   assert In EPoller\n");
+}
 
 Timestamp EPoller::poll(int timeousMs, ChannelList* activeChannels) {
 	int numEvents = epoll_wait(epollFd_,

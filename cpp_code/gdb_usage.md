@@ -1,3 +1,5 @@
+[参考来源](http://c.biancheng.net/view/8153.html)
+
 查看版本
 ```
 gdb -v

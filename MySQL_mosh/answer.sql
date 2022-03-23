@@ -406,7 +406,7 @@ DELIMITER ;
 -- test
 CALL get_payments(NULL, NULL);
 
-# p
+# p70
 
 
 

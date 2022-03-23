@@ -835,7 +835,7 @@ CREATE PROCEDURE `get_clients_by_state`
 	p_state CHAR(2)
 )
 BEGIN
-	IF p_state IS NULL THEN
+	IF p_state IS NULL THEN -- here!
 		SELECT * FROM sql_invoicing.clients c;
 	ELSE SELECT * FROM sql_invoicing.clients c WHERE c.state = p_state;
 	END IF;
@@ -844,6 +844,99 @@ DELIMITER ;
 
 CALL get_clients_by_state(NULL);
 ```
+
+## 参数验证
+```sql
+DROP PROCEDURE IF EXISTS make_payment;
+DELIMITER $$
+CREATE PROCEDURE `make_payment`
+(
+	p_invoice_id INT,
+    p_payment_amount DECIMAL(9, 2),
+    p_payment_date DATE
+)
+BEGIN
+	IF p_payment_amount <= 0 THEN -- here !
+		SIGNAL SQLSTATE '22003'
+			SET MESSAGE_TEXT = 'Invalid payment amount';
+	END IF;
+	UPDATE invoices i
+	SET
+		i.payment_total = p_payment_amount,
+		i.payment_date = p_payment_date
+	WHERE i.invoice_id = p_invoice_id;
+END$$
+DELIMITER ;
+```
+
+## 输出参数
+```sql
+USE `sql_invoicing`;
+DROP procedure IF EXISTS get_unpaid_invoices_for_client;
+DELIMITER $$
+CREATE PROCEDURE `get_unpaid_invoices_for_client` 
+(
+	client_id INT,
+    OUT invoices_count INT,	-- OUT 前缀表示输出值，类似函数的返回值
+    OUT invoices_total DECIMAL(9, 2)
+)
+BEGIN
+	SELECT COUNT(*), SUM(invoice_total)
+    INTO invoices_count, invoices_total	-- INTO关键字装入输出值
+    FROM invoices i
+    WHERE i.client_id = client_id 
+		AND payment_total = 0;
+END$$
+DELIMITER ;
+
+-- 调用流程
+set @invoices_count = 0;
+set @invoices_total = 0;
+call sql_invoicing.get_unpaid_invoices_for_client(3, @invoices_count, @invoices_total);
+select @invoices_count, @invoices_total;
+
+```
+
+## 变量
+变量存活在连接会话期间，连接断开则被清空，因此叫做 用户变量 或 会话变量。
+```sql
+set @invoices_count = 0;	-- @ 有点重要
+```
+
+另一种变量：本地变量，在存储过程或者函数中定义
+```sql
+USE sql_invoicing;
+DELIMITER $$
+
+CREATE PROCEDURE get_risk_factor()
+BEGIN
+-- risk_factor = invoices_total / invoices_count * 5
+	DECLARE risk_factor DECIMAL(9, 2) DEFAULT 0;
+    DECLARE invoices_total DECIMAL(9, 2);
+    DECLARE invoices_count INT;
+    
+    SELECT COUNT(*), SUM(invoice_total)
+    INTO invoices_count, invoices_total
+    FROM invoices;
+    
+    SET risk_factor = invoices_total / invoices_count * 5;
+    
+    SELECT risk_factor;
+END$$
+
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

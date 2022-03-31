@@ -925,8 +925,434 @@ BEGIN
 END$$
 
 DELIMITER ;
+```
+
+## 函数
+函数与存储过程类似，唯一区别是函数只能返回单一值
+```SQL
+CREATE DEFINER=`root`@`localhost` FUNCTION `get_risk_factor_by_client`(
+	client_id INT
+) RETURNS int
+-- DETERMINISTIC -- 有确定性，指同输入则有同输出，不依赖数据库的值
+READS SQL DATA -- 内有SELECT
+-- MODIFIES SQL DATA -- 有插入、更新或删除
+BEGIN
+-- risk_factor = invoices_total / invoices_count * 5
+	DECLARE risk_factor DECIMAL(9, 2) DEFAULT 0;
+    DECLARE invoices_total DECIMAL(9, 2);
+    DECLARE invoices_count INT;
+    
+    SELECT COUNT(*), SUM(invoice_total)
+    INTO invoices_count, invoices_total
+    FROM invoices i
+    WHERE i.client_id = client_id;
+    
+    SET risk_factor = invoices_total / invoices_count * 5;
+    
+RETURN IFNULL(risk_factor,0);
+END
 
 
+-- test
+USE sql_invoicing;
+SELECT
+	client_id,
+    name,
+    get_risk_factor_by_client(client_id)
+FROM clients;
+
+-- 删除函数
+DROP FUNCTION IF EXISTS get_risk_factor_by_client;
+```
+
+## 其他约定
+函数前加fn，存储过程前加proc，驼峰命名法，首字母命名法等等。
+
+# 第十章 
+
+## 触发器
+触发器（trigger）是再插入、更新和删除语句前后自动执行的一系列代码。 
+通常使用触发器增强数据一致性
+```sql
+USE sql_invoicing;
+
+DELIMITER $$ 
+
+CREATE TRIGGER payments_after_insert
+	AFTER INSERT ON payments
+    FOR EACH ROW 
+BEGIN
+	UPDATE invoices 
+    SET payment_total = payment_total + NEW.amount
+	WHERE invoice_id = NEW.invoice_id;
+END$$ 
+DELIMITER ;
+```
+
+## 查看触发器
+```sql
+SHOW TRIGGERS;
+SHOW TRIGGERS LIKE 'payments%';
+```
+
+## 删除触发器
+```sql
+DROP TRIGGER IF EXISTS payments_after_insert;
+```
+
+## 使用触发器进行审计
+```sql
+USE sql_invoicing;
+DROP TRIGGER IF EXISTS payments_after_insert;
+DELIMITER $$ 
+CREATE TRIGGER payments_after_insert
+	AFTER INSERT ON payments
+    FOR EACH ROW 
+BEGIN
+	UPDATE invoices 
+    SET payment_total = payment_total + NEW.amount
+	WHERE invoice_id = NEW.invoice_id;
+    -- 以下为审计部分
+    -- 即把本次行为本身做一个记录，以方便后续复查
+    INSERT INTO payments_audit 
+    VALUES (NEW.client_id, NEW.date, NEW.amount, 'Insert', NOW());
+END$$ 
+DELIMITER ;
+```
+
+## 事件Events
+事件是按计划执行的一系列任务或者代码，可以只执行一次，也可以按规律执行，例如每天or每周or每月执行一次，用于自动化维护数据库
+```sql
+SHOW VARIABLES; -- 展示所有系统变量
+SHOW VARIABLES LIKE 'event%'; -- 找到以 event 开头的系统变量
+SET GLOBAL event_scheduler = ON;
+
+USE sql_invoicing;
+DROP EVENT IF EXISTS yearly_delete_stale_audit_rows;
+DELIMITER $$
+CREATE EVENT yearly_delete_stale_audit_rows
+ON SCHEDULE 
+	EVERY 1 YEAR STARTS '2019-01-01'
+	-- 可把上一行替换为 AT '2019-01-01 11:00'，则只执行一次
+DO BEGIN
+	DELETE FROM payment_audit
+    WHERE action_date < NOW() - INTERVAL 1 YEAR;
+END$$
+DELIMITER ;
+```
+
+## 查看、删除和更改事件
+```sql
+-- 显示事件
+SHOW EVENTS;
+SHOW EVENTS LIKE 'yearly%';
+-- 删除事件
+DROP EVENT IF EXISTS yearly_delete_stale_audit_rows;
+-- 更改事件
+ALTER EVENT yearly_delete_stale_audit_rows DISABLE; -- or ENABLE
+ALTER EVENT -- 之后的语法与 CREATE EVENT 类似
+```
+
+# 第十一章 事务
+事务的ACID
+* Atomicity
+* Consistency
+* Isolation
+* Durability
+
+## 创建事务
+```sql
+USE sql_store;
+-- 开始事务
+START TRANSACTION;
+
+INSERT INTO orders (customer_id, order_date, status)
+VALUES (1, '2019-01-01', 1);
+
+INSERT INTO order_items
+VALUES (LAST_INSERT_ID(), 1, 1, 1);
+-- 提交事务
+COMMIT;
+
+
+USE sql_store;
+-- 开始事务
+START TRANSACTION;
+INSERT INTO orders (customer_id, order_date, status)
+VALUES (1, '2019-01-01', 1);
+-- 突然想退回并且做一些手动检查
+ROLLBACK;
+
+-- 查看自动提交的系统变量
+SHOW VARIABLES LIKE 'autocommit';
+```
+
+## 并发和锁定
+解释了一下并发和锁定
+
+## 并发问题
+* Lost Updates 丢失更新
+没上锁，则晚更新的会覆盖早更新的
+
+* Dirty Reads 脏读
+事务A改某个积分为1w，事务A没提交。此时事务B读取了那个1w积分。 
+Read Committed读已提交，只能读已经提交了的数据
+
+* Non-repeating Reads 不可重复读 
+如果一个事务中读两次，且读到的数据不一样 
+
+* Phantom Reads 幻读 
+例：给数据库中所有大于100积分的人发奖，事务开始时读一遍，事务执行过程中，有一个人的积分涨到100以上，则他没得到奖品。用隔离级别“序列化Serializable”来执行，以确保此事务执行时，没有其他操作 此事务涉及到的数据库 的事务在进行
+
+## 事务隔离级别 Transaction Isolation Level
+
+need_
+
+```sql
+-- 查看隔离级别
+SHOW VARIABLES LIKE 'transaction_isolation';
+-- 设置隔离级别
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; --下一个事务的级别
+-- 设置本次会话所有隔离级别
+SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+-- 设置所有隔离级别
+SET GLOBAL TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+```
+### READ UNCOMMITTED 读未提交
+```sql
+# 执行顺序按s1, s2, s3...执行
+# 会话1
+-- s1
+USE sql_store;
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+-- s3
+SELECT points
+FROM customers
+WHERE customer_id = 1;
+
+# 会话2
+-- s2
+USE sql_store;
+START TRANSACTION;
+UPDATE customers
+SET points = 20
+WHERE customer_id = 1;
+-- s4
+ROLLBACK;
+
+-- 执行完毕以后，会话1会读到一个从未在数据库中真正提交的数据：
+-- id为1的客户的积分是20
+-- 这就是脏读
+```
+
+### READ COMMITTED 读已提交
+```sql
+-- 会话1
+-- step1
+USE sql_store;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+START TRANSACTION;
+-- step3
+SELECT points
+FROM customers
+WHERE customer_id = 1;
+COMMIT;
+
+-- 会话2
+-- step2
+USE sql_store;
+START TRANSACTION;
+UPDATE customers
+SET points = 30
+WHERE customer_id = 1;
+-- step4
+COMMIT;
+```
+
+### REPEATABLE READ 可重复读
+约等于开始事务前搞一个整体的copy（实际上应该不是），然后从copy里读数，使得事务期间读到的数据具有一致性。
+
+### SERIALIZABLE 序列化
+人如其名，序列化，拒绝并发，一个事务一个事务的执行，仿佛数据库是单用户一般。
+
+好处防止幻读等各种并发问题，坏处并发度降低，使得数据库性能下降。
+
+## 死锁
+```sql
+-- session 1
+-- step 1
+USE sql_store;
+START TRANSACTION;
+UPDATE customers SET state = 'VA' WHERE customer_id = 1;
+-- step 3
+UPDATE orders SET status = 1 WHERE order_id = 1;
+COMMIT;
+
+-- session 2
+-- step 2
+USE sql_store;
+START TRANSACTION;
+UPDATE orders SET status = 1 WHERE order_id = 1;
+-- step 4
+UPDATE customers SET state = 'VA' WHERE customer_id = 1;
+COMMIT;
+```
+
+# 第十二章
+
+## 数据类型
+* String Types
+* Numeric Types
+* Date And Time Types
+* Blob Types
+* Spatial Types
+
+## String
+最常见的是CHAR，VARCHAR
+
+VARCHAR(50) 短字符串，例如账号密码
+VARCHAR(255) 地址等
+
+VARCHAR 最大64kB，65535
+
+MEDIUMTEXT,最大16MB 最多可以存储1600万多个字符，对于JSON对象、CSV字符串以及中短长度的书比较好使。
+
+LONGTEXT，最大4GB，适合存书以及多年的日志
+
+TINYTEXT 最大255字节
+TEXT 最大64KB
+
+英语1字节，欧洲、中东2字节，亚洲3字节（例如中文日文）
+
+## Integers
+
+TINYINT 1B [-128, 127]
+UNSIGNED TINYINT [0, 255]
+
+SMALLINT 2B [-32K, 32K]
+
+MEDIUMINT 3B [-8M, 8M]
+
+INT 4B [-2B, 2B]
+
+BIGINT 8B [-9Z, 9Z]
+
+INT(4) 在数值不够4位的时候，会补0，例如把1显示为0001，但只会影响显示，不会影响MySQL存储它们的方式。
+
+## Rationals
+DECIMAL(p, s)	p 精度 1- 65，s 小数点后的位数 
+DECIMAL的同义词有DEC, NUMERIC， FIXED
+
+下面这两种存储的都是近似值，不是精确值
+FLOAT 4B
+DOUBLE 8B
+
+## Booleans
+BOOL
+BOOLEAN
+
+## ENUMS
+ENUM('small', 'medium', 'large')
+
+## Date/Time
+DATE
+TIME
+DATETIME	8B
+TIMESTAMP 	4B，最多存到2038年的数据
+YEAR
+
+## Blobs
+TINYBLOB 最大255B
+BLOB 	最大65KB
+MEDIUMBLOB	最大16MB
+LONGBLOB	最大4GB
+
+非常不建议存二进制数据到数据库里。理由：
+* 数据库大小会迅速增加
+* 会弱化数据备份的功能
+* 性能变差
+* 存取数据会需要额外的代码
+
+## JSON
+```json
+{
+	"key1" : value1,
+	"key2" : value2
+}
+```
+```sql
+-- 方法一
+USE sql_store;
+UPDATE products
+SET properties = '
+{
+	"dimensions":[1, 2, 3],
+    "weight": 10,
+    "manufacturer":{"name":"sony"}
+}
+'
+WHERE product_id = 1;
+
+-- 方法二，调用内置函数
+USE sql_store;
+UPDATE products
+SET properties = JSON_OBJECT(
+	'weight', 10,
+    'dimensions', JSON_ARRAY(1, 2, 3),
+    'manufacturer',JSON_OBJECT('name', 'sony')
+)
+WHERE product_id = 1;
+```
+
+```sql
+-- 提取JSON对象中键值的方法，$代表的是当前路径
+SELECT product_id, JSON_EXTRACT(properties, '$.weight') AS weight
+FROM products
+WHERE product_id = 1;
+
+-- 方法二
+SELECT product_id, properties ->'$.weight'AS weight
+FROM products
+WHERE product_id = 1;
+
+-- 可以对数组使用从0开始的索引
+SELECT product_id, properties ->'$.dimensions[0]'AS what
+FROM products
+WHERE product_id = 1;
+
+-- JSON中的JSON，使用 . 来访问
+SELECT product_id, properties ->'$.manufacturer.name'AS what
+FROM products
+WHERE product_id = 1;
+
+-- ->>可以去掉结果中的""
+SELECT product_id, properties ->>'$.manufacturer.name'AS what
+FROM products
+WHERE product_id = 1;
+```
+
+```sql
+-- 修改JSON对象
+USE sql_store;
+UPDATE products
+SET properties = JSON_SET(
+	properties,	-- 字段名
+	'$.weight', 30,	-- 改老的
+    '$.age', 10		-- 加新的
+)
+WHERE product_id = 1;
+
+-- 删除JOSN对象里的东西
+USE sql_store;
+UPDATE products
+SET properties = JSON_REMOVE(
+	properties,	-- 字段名
+    '$.age'	-- 要删除的东西
+)
+WHERE product_id = 1;
+```
+
+## 第十三章 设计数据库
 
 
 

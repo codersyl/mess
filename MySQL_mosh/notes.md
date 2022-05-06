@@ -65,7 +65,7 @@ WHERE points BETWEEN 0 AND 100
 LIKE关键字
 WHERE name LIKE '%a%'; -- 这句也能搜到大写A，也可以使用 NOT LIKE 取补集
 寻找name中有a的人
-_代表一个字符，%代表任意多字符
+\_代表一个字符，%代表任意多字符
 
 REGEXP关键字
 正则
@@ -1352,7 +1352,117 @@ SET properties = JSON_REMOVE(
 WHERE product_id = 1;
 ```
 
-## 第十三章 设计数据库
+# 第十三章 设计数据库
+
+## Data Modelling 数据建模
+* 理解和分析业务需求
+多收集信息，跟合作方、其他部门甚至终端用户讨论需求
+* 建立业务的概念模型
+包括业务中的实体、事物或者概念以及它们之间的关系
+* 建立逻辑模型
+建立一个数据模型或者数据结构用于存储数据，是一个独立于数据技术的抽象数据模型。
+* 建立一个物理模型
+具体的数据库
+
+## Conceptual Models 概念模型
+找出实体以及它们之间的关系，实体可能有人、事件、位置等。
+
+可视化的搞概念模型方法：
+* 实体关系图（ER图），通常用于数据建模
+* UML图（Unified Modeling languages）
+
+魔石的教学里采用ER图，windows可以用 Microsoft visio画，也可以使用在线工具draw.io, LucidCharts来画
+
+## Logical Models 逻辑模型
+把概念模型细化，比如
+* 把name标上string，但不能标varchar，因为varchar是MySQL的实现细节
+* 尽量拆分、细化，例如name拆分成姓、名，地址拆分为国家、省、市、区、街道、门牌号、楼
+* 给实体之间的关系命名，这在概念模型中不太重要，但在逻辑模型中需要搞清楚
+
+## Physical Models 实体模型
+需要确定数据库
+
+## 外键
+引入其他表的主键，可以用来当这张表的主键，也可以不当。
+
+可以调外键的行为，有几种选项
+* RESTRICT，拒绝更新
+* CASCADE，级联，跟着别的表的键一起变，如果被删了，则一起删
+* SET NULL，设为NULL，会导致一个子记录失去父表，变成孤儿记录，尽量不要选这个
+* NO ACTION，与RESTRICT相同
+
+## Normalization 标准化
+标准化是审查我们的设计，并确保它遵循一些防止数据重复的预定义规则的这一过程。
+
+### 1NF 1st Normal Form 第一范式
+Each cell should have a single value and we cannot have repeated columns.
+
+有的时候需要借助连接表来确保第一范式
+* Link Table 链接表
+用于帮助两个表进行多对多关系链接的表，这个表会与另外两个表建立一对多关系。 
+这个表是多，另外两个是一，且一般这个表会以那两个外键作为主键。
+
+### 2NF 第二范式
+Every table should describe one entity, and every column in that table should describe that enetity.
+
+例如订单表里，不能有客户名的列，但可以有客户id的列。
+
+### 3NF 第三范式
+A column in a table should not be derived from other columns.
+
+表中的列不能从其他列派生而来，例如，总额，消费，余额三个同时出现在columns中。
+又或，customer_id 与 customer_name 不能同时出现在列中
+
+## EAV
+Entities
+
+Attributes
+
+Values
+
+Solve today's problems, not future problems that may never happen.
+
+Simplicity is the ultimate sophistication.
+
+## Forward Engineering 正向工程
+正向工程指的是，通过一个模型，建造一个数据库
+
+搞完模型后，在Database选项找到正向工程，点击。之后按步骤完成就完事了。
+
+## 数据库同步模型
+修改数据库后，如何将改变同步到所有数据库中去。
+
+在ERR图中做好修改后，点击上方的 Database 里的 Sychronize Model，按照一系列的流程弄好后，就完事了。最后阶段的代码最好复制下来同步到git里，方便其他使用这个数据库的人进行同步。
+
+## Reverse Engineering 模型的逆向工程
+从数据库得到模型的过程叫做逆向工程。
+
+## 创建、删除数据库
+```sql
+CREATE DATABASE IF NOT EXISTS test;
+DROP DATABASE IF EXISTS test;
+```
+
+## 创建、删除表
+```sql
+CREATE DATABASE IF NOT EXISTS test;
+USE test;
+DROP TABLE IF EXISTS customers;
+CREATE TABLE IF NOT EXISTS customers
+(
+	customer_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name 	VARCHAR(50) NOT NULL,
+    points		INT NOT NULL DEFAULT 0,
+    email		VARCHAR(255) NOT NULL UNIQUE
+);
+```
+
+## 修改表
+```sql
+ALTER TABLE customers
+	ADD last_name VARCHAR(50) UNIQUE AFTER first_name
+```
+
 
 
 

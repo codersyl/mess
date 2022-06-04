@@ -175,22 +175,22 @@ package main
 import "fmt"
 func main() {
     switch {
-    case false:
-            fmt.Println("1、case 条件语句为 false")
-            fallthrough
-    case true:
-            fmt.Println("2、case 条件语句为 true")
-            fallthrough
-    case false:
-            fmt.Println("3、case 条件语句为 false")
-            fallthrough
-    case true:
-            fmt.Println("4、case 条件语句为 true")
-    case false:
-            fmt.Println("5、case 条件语句为 false")
-            fallthrough
-    default:
-            fmt.Println("6、默认 case")
+        case false:
+                fmt.Println("1、case 条件语句为 false")
+                fallthrough
+        case true:
+                fmt.Println("2、case 条件语句为 true")
+                fallthrough
+        case false:
+                fmt.Println("3、case 条件语句为 false")
+                fallthrough
+        case true:
+                fmt.Println("4、case 条件语句为 true")
+        case false:
+                fmt.Println("5、case 条件语句为 false")
+                fallthrough
+        default:
+                fmt.Println("6、默认 case")
     }
 }
 // 运行结果
@@ -342,3 +342,301 @@ func (c Circle) getArea() float64 {
 * 全局变量
 * 局部变量
 * 形式参数
+
+# Go 语言数组
+```go
+var variable_name [SIZE] variable_type
+// exemple
+var balance [10] float32
+// 编译器自行判断数组长度 [...]
+var balance = [...]float32{1000.0, 2.0, 3.4, 7.0, 50.0}
+```
+
+# Go 语言指针
+```go
+var var_name *var-type
+var ip *int        /* 指向整型*/
+var fp *float32    /* 指向浮点型 */
+```
+
+# Go 语言结构体
+```go
+// 结构体定义
+type struct_variable_type struct {
+   member definition
+   member definition
+   ...
+   member definition
+}
+
+// 结构体声明
+variable_name := structure_variable_type {value1, value2...valuen}
+// or
+variable_name := structure_variable_type { key1: value1, key2: value2..., keyn: valuen}
+
+// 访问结构体成员
+var Book1 Books        /* 声明 Book1 为 Books 类型 */
+/* book 1 描述 */
+Book1.title = "Go 语言"
+Book1.author = "www.runoob.com"
+Book1.subject = "Go 语言教程"
+Book1.book_id = 6495407
+```
+
+结构体指针访问成员同样用.
+
+# Go 语言切片(Slice) - 动态数组
+```go
+var identifier []type
+var slice1 []type = make([]type, len)
+slice1 := make([]type, len)
+// make([]T, length, capacity)
+// 也可以指定容量，其中 capacity 为可选参数
+
+// append()
+numbers = append(numbers, 2,3,4)
+
+// copy()
+copy(numbers1,numbers)  // 拷贝 numbers 的内容到 numbers1
+```
+
+# Go 语言范围(Range)
+Go 语言中 range 关键字用于 for 循环中迭代数组(array)、切片(slice)、通道(channel)或集合(map)的元素。
+
+在数组和切片中它返回元素的索引和索引对应的值，在集合中返回 key-value 对。
+```go
+// for 循环的 range 格式可以对 slice、map、数组、字符串等进行迭代循环。
+for key, value := range oldMap {
+    newMap[key] = value
+}
+```
+
+# Go 语言Map(集合)
+Map 是一种**无序**的键值对的集合。
+
+```go
+/* 声明变量，默认 map 是 nil */
+var map_variable map[key_data_type]value_data_type
+
+/* 使用 make 函数 */
+map_variable := make(map[key_data_type]value_data_type)
+
+/*查看元素在集合中是否存在 */
+capital, ok := countryCapitalMap [ "American" ] /*如果确定是真实的,则存在,否则不存在 */
+/*fmt.Println(capital) */
+/*fmt.Println(ok) */
+if (ok) {
+    fmt.Println("American 的首都是", capital)
+} else {
+    fmt.Println("American 的首都不存在")
+}
+
+/*删除元素*/ 
+delete(countryCapitalMap, "France")
+```
+
+# Go 语言类型转换
+
+```go
+type_name(expression)
+```
+
+tips: Go 不支持隐式转换
+
+# Go 语言接口
+```go
+// 抽象例子
+/* 定义接口 */
+type interface_name interface {
+   method_name1 [return_type]
+   method_name2 [return_type]
+   method_name3 [return_type]
+   ...
+   method_namen [return_type]
+}
+
+/* 定义结构体 */
+type struct_name struct {
+   /* variables */
+}
+
+/* 实现接口方法 */
+func (struct_name_variable struct_name) method_name1() [return_type] {
+   /* 方法实现 */
+}
+// ...
+func (struct_name_variable struct_name) method_namen() [return_type] {
+   /* 方法实现*/
+}
+```
+
+```go
+// 具体例子
+package main
+import (
+    "fmt"
+)
+// 定义接口 Phone
+type Phone interface {
+    call()
+}
+// 两种结构体及其方法
+type NokiaPhone struct {
+}
+type IPhone struct {
+}
+func (nokiaPhone NokiaPhone) call() {
+    fmt.Println("I am Nokia, I can call you!")
+}
+func (iPhone IPhone) call() {
+    fmt.Println("I am iPhone, I can call you!")
+}
+
+func main() {
+    // 声明了个接口
+    var phone Phone
+    // 给接口赋值
+    phone = new(NokiaPhone)
+    phone.call()
+
+    phone = new(IPhone)
+    phone.call()
+}
+```
+
+# Go 错误处理
+Go 语言通过内置的错误接口提供了非常简单的错误处理机制。
+```go
+// error 接口定义
+type error interface {
+    Error() string
+}
+```
+
+```go
+func Sqrt(f float64) (float64, error) {
+    if f < 0 {
+        return 0, errors.New("math: square root of negative number")
+    }
+    // 实现
+}
+```
+
+```go
+// 具体例子
+package main
+import (
+    "fmt"
+)
+
+// 定义一个 DivideError 结构
+type DivideError struct {
+    dividee int
+    divider int
+}
+
+// 实现 `error` 接口
+func (de *DivideError) Error() string {
+    strFormat := `
+    Cannot proceed, the divider is zero.
+    dividee: %d
+    divider: 0
+`
+    return fmt.Sprintf(strFormat, de.dividee)
+}
+
+// 定义 `int` 类型除法运算的函数
+func Divide(varDividee int, varDivider int) (result int, errorMsg string) {
+    if varDivider == 0 {
+            dData := DivideError{
+                    dividee: varDividee,
+                    divider: varDivider,
+            }
+            errorMsg = dData.Error()
+            return
+    } else {
+            return varDividee / varDivider, ""
+    }
+
+}
+
+func main() {
+
+    // 正常情况
+    if result, errorMsg := Divide(100, 10); errorMsg == "" {
+            fmt.Println("100/10 = ", result)
+    }
+    // 当除数为零的时候会返回错误信息
+    if _, errorMsg := Divide(100, 0); errorMsg != "" {
+            fmt.Println("errorMsg is: ", errorMsg)
+    }
+
+}
+```
+
+# Go 并发
+```go
+go 函数名( 参数列表 )
+```
+
+## 通道（channel）
+```go
+// 声明通道
+ch := make(chan int)
+// 第二个参数可以指定缓冲区大小
+ch := make(chan int, 100)
+```
+
+```go
+// 具体例子
+package main
+import "fmt"
+
+func sum(s []int, c chan int) {
+        sum := 0
+        for _, v := range s {
+                sum += v
+        }
+        c <- sum // 把 sum 发送到通道 c
+}
+
+func main() {
+        s := []int{7, 2, 8, -9, 4, 0}
+        c := make(chan int)
+        go sum(s[:len(s)/2], c)
+        go sum(s[len(s)/2:], c)
+        // 从通道 c 中接收
+        x, y := <-c, <-c 
+        fmt.Println(x, y, x+y)
+}
+```
+
+## Go 遍历通道与关闭通道
+```go
+v, ok := <-ch   // besoin 没太搞懂
+
+// 具体例子
+package main
+import (
+        "fmt"
+)
+func fibonacci(n int, c chan int) {
+        x, y := 0, 1
+        for i := 0; i < n; i++ {
+                c <- x
+                x, y = y, x+y
+        }
+        close(c)
+}
+func main() {
+        c := make(chan int, 10)
+        go fibonacci(cap(c), c)
+        // range 函数遍历每个从通道接收到的数据，因为 c 在发送完 10 个
+        // 数据之后就关闭了通道，所以这里我们 range 函数在接收到 10 个数据
+        // 之后就结束了。如果上面的 c 通道不关闭，那么 range 函数就不
+        // 会结束，从而在接收第 11 个数据的时候就阻塞了。
+        for i := range c {
+                fmt.Println(i)
+        }
+}
+```

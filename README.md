@@ -6,3 +6,5 @@
 
 2022-06-03
 * start go_learning
+2022-06-07
+* remove go_learning and create a new repository for it
